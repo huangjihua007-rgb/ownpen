@@ -1,6 +1,6 @@
 ---
 name: "AI去痕迹改写"
-version: "1.2.0"
+version: "1.2.1"
 slug: "ownpen"
 description: "一键淡化机器感，告别一眼AI文案。专为真人质感写作打造，深度弱化AI模板话术，保留原意不变，职场日常自媒体文案隐形原创不被识破。"
 author: "huangjihua007-rgb"
