@@ -1,8 +1,8 @@
 ---
-name: "OwnPen - 亲笔写的"
-version: "1.1.0"
+name: "AI去痕迹改写"
+version: "1.2.0"
 slug: "ownpen"
-description: "Spots AI patterns in Chinese writing and rewrites to match your platform. Works for WeChat articles, Zhihu, Xiaohongshu, work reports, and WeChat Moments.\n找出中文里的AI痕迹，按你要发的平台改成人写的样子。支持公众号、知乎、小红书、工作汇报、朋友圈。"
+description: "一键淡化机器感，告别一眼AI文案。专为真人质感写作打造，深度弱化AI模板话术，保留原意不变，职场日常自媒体文案隐形原创不被识破。"
 author: "huangjihua007-rgb"
 tags: ["writing", "chinese", "humanizer", "ai-detection", "rewriting", "ownpen"]
 category: "productivity"
