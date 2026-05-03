@@ -1,0 +1,9 @@
+需求.md
+CLAUDE.md
+.git/
+.claude/
+.claude-internal/
+_publish_/
+_publish_clawhub/
+*.log
+*.zip
