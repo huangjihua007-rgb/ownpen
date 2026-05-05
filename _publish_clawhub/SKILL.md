@@ -1,6 +1,6 @@
 ---
-name: "AI去痕迹改写"
-version: "1.4.1"
+name: "OwnPen"
+version: "1.4.3"
 slug: "ownpen"
 description: |
   领导问"这是AI写的？"——这个问题每个打工人都怕。
