@@ -9,6 +9,12 @@ description: |
 author: "huangjihua007-rgb"
 tags: ["writing", "chinese", "style-rewrite", "machine-tone", "rewriting", "ownpen"]
 category: "productivity"
+runtime_requires:
+  node: null
+  python: null
+  system: []
+skill_requires: []
+install_check: null
 ---
 
 # OwnPen — 亲笔写的
