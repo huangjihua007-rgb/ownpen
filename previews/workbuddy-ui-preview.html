@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OwnPen · WorkBuddy UI 预览</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --panel: #ffffff;
+      --panel-2: #f8fbff;
+      --text: #18202a;
+      --muted: #5f6b7a;
+      --line: #dbe4f0;
+      --blue: #2f6bff;
+      --blue-soft: #edf3ff;
+      --green: #0f9d6c;
+      --yellow: #d89a00;
+      --red: #d44747;
+      --shadow: 0 16px 40px rgba(31, 51, 90, 0.08);
+      --radius: 20px;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --sans: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, #ffffff 0%, #eef4ff 32%, var(--bg) 70%);
+      color: var(--text);
+      font-family: var(--sans);
+    }
+
+    .page {
+      width: min(1480px, calc(100vw - 40px));
+      margin: 28px auto 40px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .hero-card, .notes-card, .shell, .panel {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(219, 228, 240, 0.9);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      padding: 26px 28px;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .badge {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .notes-card {
+      padding: 22px 24px;
+    }
+
+    .notes-card h3 {
+      margin: 0 0 12px;
+      font-size: 17px;
+    }
+
+    .notes-card ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 14px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(219, 228, 240, 0.85);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+      position: sticky;
+      top: 14px;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+    }
+
+    .tab {
+      border: 0;
+      padding: 10px 16px;
+      border-radius: 12px;
+      background: #eef3fb;
+      color: #4a5563;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, var(--blue), #5b8cff);
+      color: white;
+      box-shadow: 0 10px 22px rgba(47, 107, 255, 0.22);
+    }
+
+    .view {
+      display: none;
+      animation: fade 0.2s ease;
+    }
+
+    .view.active {
+      display: grid;
+      grid-template-columns: minmax(760px, 1.05fr) minmax(320px, 0.44fr);
+      gap: 18px;
+    }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .shell {
+      overflow: hidden;
+    }
+
+    .shell-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: linear-gradient(180deg, #f9fbff 0%, #f2f6fd 100%);
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #d1d8e4;
+    }
+
+    .dot:nth-child(1) { background: #ff8e8e; }
+    .dot:nth-child(2) { background: #ffc864; }
+    .dot:nth-child(3) { background: #7cd992; }
+
+    .chat {
+      padding: 24px 22px 28px;
+      background: linear-gradient(180deg, #f8fbff 0%, #f4f7fc 100%);
+      min-height: 860px;
+    }
+
+    .message {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 18px;
+      align-items: flex-start;
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #dbe7ff, #f0f5ff);
+      border: 1px solid #c7d7ff;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      flex: 0 0 auto;
+    }
+
+    .user .avatar {
+      background: linear-gradient(135deg, #d9f7ec, #effcf7);
+      border-color: #bfecd7;
+    }
+
+    .bubble-wrap {
+      max-width: 760px;
+      min-width: 0;
+    }
+
+    .label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      padding: 0 4px;
+    }
+
+    .bubble {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: white;
+      border: 1px solid #e4ebf5;
+      box-shadow: 0 8px 18px rgba(31, 51, 90, 0.06);
+      line-height: 1.7;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+
+    .user .bubble {
+      background: linear-gradient(135deg, #e7f7ef, #f5fffa);
+      border-color: #caebd8;
+    }
+
+    .skill-card {
+      background: white;
+      border-radius: 20px;
+      border: 1px solid #dfe8f6;
+      box-shadow: 0 12px 24px rgba(31, 51, 90, 0.08);
+      overflow: hidden;
+    }
+
+    .card-head {
+      padding: 16px 18px 10px;
+      border-bottom: 1px solid #eef3f9;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .minor {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .card-body {
+      padding: 16px 18px 18px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0;
+      border: 1px solid #e7edf7;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .meta-grid div {
+      padding: 12px 14px;
+      background: #fbfdff;
+      border-bottom: 1px solid #edf2f9;
+      font-size: 14px;
+    }
+
+    .meta-grid div:nth-last-child(-n+2) {
+      border-bottom: 0;
+    }
+
+    .meta-grid div:nth-child(2n) {
+      text-align: right;
+      color: var(--muted);
+    }
+
+    .menu-table,
+    .diag-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 14px;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid #e7edf7;
+      margin: 12px 0 14px;
+      background: white;
+    }
+
+    .menu-table th,
+    .menu-table td,
+    .diag-table th,
+    .diag-table td {
+      padding: 11px 12px;
+      border-bottom: 1px solid #edf2f9;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .menu-table th,
+    .diag-table th {
+      background: #f7faff;
+      color: #415065;
+      font-weight: 800;
+    }
+
+    .menu-table tr:last-child td,
+    .diag-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .prompt {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #f8fbff;
+      border: 1px dashed #d9e4f7;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-weight: 800;
+      font-size: 13px;
+      border: 1px solid #d4e2ff;
+    }
+
+    .copy-box {
+      background: #fcfdff;
+      border: 1px solid #e4ebf5;
+      border-radius: 16px;
+      padding: 16px;
+      line-height: 1.9;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #d9e4f5, transparent);
+      margin: 16px 0;
+    }
+
+    .gauge {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #fff9f1 0%, #fffdf7 100%);
+      border: 1px solid #f2dfbf;
+      margin-top: 14px;
+    }
+
+    .meter {
+      font-family: var(--mono);
+      letter-spacing: 0.14em;
+      font-size: 16px;
+      color: #ad6d00;
+    }
+
+    .level {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #fff0e1;
+      color: #b56500;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .panel {
+      padding: 18px 18px 20px;
+      align-self: start;
+    }
+
+    .panel h3 {
+      margin: 0 0 12px;
+      font-size: 17px;
+    }
+
+    .panel h4 {
+      margin: 18px 0 8px;
+      font-size: 14px;
+      color: #334255;
+    }
+
+    .panel p,
+    .panel li {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .panel ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+
+    .mini-card {
+      padding: 12px 13px;
+      background: #f8fbff;
+      border-radius: 14px;
+      border: 1px solid #e6eef9;
+      margin-top: 10px;
+    }
+
+    .full-flow {
+      display: grid;
+      gap: 16px;
+    }
+
+    .tiny {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #f4f7fb;
+      color: #596777;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid #e3eaf4;
+    }
+
+    .danger { color: var(--red); font-weight: 700; }
+    .warning { color: var(--yellow); font-weight: 700; }
+    .success { color: var(--green); font-weight: 700; }
+
+    @media (max-width: 1180px) {
+      .hero,
+      .view.active {
+        grid-template-columns: 1fr;
+      }
+
+      .chat {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="hero-card">
+        <div class="title-row">
+          <div>
+            <h1>🖊️ OwnPen · WorkBuddy 完整 UI 预览</h1>
+            <p class="subtitle">这是按你 <code>D:/skill-factory</code> 里的 ownpen 项目记忆、<code>SKILL.md</code> 流程和 <code>03-UI规范.md</code> 做出来的高保真静态原型。重点不是“网页设计感”，而是模拟它在 WorkBuddy 里作为聊天式 Skill 时的界面层级、卡片结构、按钮状态和信息密度。</p>
+          </div>
+        </div>
+        <div class="badges">
+          <span class="badge">来源：projects/ownpen.md</span>
+          <span class="badge">版本：v1.4.0</span>
+          <span class="badge">模式：改写 + 诊断</span>
+          <span class="badge">规范：Markdown 表格优先</span>
+        </div>
+      </div>
+      <div class="notes-card">
+        <h3>这份预览重点还原了什么</h3>
+        <ul>
+          <li>开场卡、场景菜单、等待粘贴、改写结果、诊断结果五个关键状态。</li>
+          <li>“蓝色=可点击”的动作按钮约定，以及 60-80 字符宽度的 PC 优先排版。</li>
+          <li>改写模式先选场景再粘文字的流程修复。</li>
+          <li>诊断模式中的表格、AI气味指数、问题分级与跳转动作。</li>
+        </ul>
+      </div>
+    </section>
+
+    <nav class="toolbar">
+      <button class="tab active" data-view="welcome">开场卡</button>
+      <button class="tab" data-view="scene">场景选择</button>
+      <button class="tab" data-view="paste">等待粘贴</button>
+      <button class="tab" data-view="rewrite">改写结果</button>
+      <button class="tab" data-view="diagnosis">诊断结果</button>
+      <button class="tab" data-view="full">全流程串看</button>
+    </nav>
+
+    <section id="welcome" class="view active">
+      <div class="shell">
+        <div class="shell-top">
+          <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div>WorkBuddy 对话预览 · 开场状态</div>
+          <div class="tiny">OwnPen / AI去痕迹改写</div>
+        </div>
+        <div class="chat">
+          <div class="message">
+            <div class="avatar">🖊️</div>
+            <div class="bubble-wrap">
+              <div class="label">OwnPen</div>
+              <div class="skill-card">
+                <div class="card-head">
+                  <div class="card-title"><span>🖊️ OwnPen · AI去痕迹改写</span><span class="minor">v1.4.0</span></div>
+                </div>
+                <div class="card-body">
+                  <div class="meta-grid">
+                    <div>45条检测规则 · 10种场景风格</div>
+                    <div>工具型 Skill</div>
+                    <div><strong>粘进来就改，格式一字不动</strong></div>
+                    <div>中文原生去AI化</div>
+                  </div>
+
+                  <div class="prompt">选一个模式开始：</div>
+
+                  <table class="menu-table">
+                    <thead>
+                      <tr><th style="width:64px; text-align:center;">#</th><th>模式</th><th>适合场景</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td style="text-align:center;">1</td><td>✏️ 改写</td><td>有文字要改，直接出结果</td></tr>
+                      <tr><td style="text-align:center;">2</td><td>🔍 诊断</td><td>想知道 AI 味在哪、有多重</td></tr>
+                    </tbody>
+                  </table>
+
+                  <div class="action-row">
+                    <span class="chip">1. [改写]</span>
+                    <span class="chip">2. [诊断]</span>
+                  </div>
+
+                  <div class="prompt">💬 回复 1 或 2，或直接粘入文字</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aside class="panel">
+        <h3>这个状态在验证什么</h3>
+        <p>它对应 <code>SKILL.md</code> 的首屏入口，也是你在 WorkBuddy 里最先看到的“启动页”。</p>
+        <h4>还原点</h4>
+        <ul>
+          <li>表格不是装饰，而是操作层级本身。</li>
+          <li>蓝色按钮只留给可点击动作。</li>
+          <li>文字信息密度高，但不挤，符合 PC 优先宽布局。</li>
+        </ul>
+        <div class="mini-card">
+          <strong>你要看的核心：</strong>
+          <p>在 WorkBuddy 里，这种工具型 Skill 的第一屏不需要花哨，只要“一眼知道能干嘛、下一步点哪”。这一版已经把这个节奏拉出来了。</p>
+        </div>
+      </aside>
+    </section>
+
+    <section id="scene" class="view">
+      <div class="shell">
+        <div class="shell-top">
+          <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div>WorkBuddy 对话预览 · 改写模式</div>
+          <div class="tiny">步骤 2 / 场景选择</div>
+        </div>
+        <div class="chat">
+          <div class="message user">
+            <div class="bubble-wrap">
+              <div class="label" style="text-align:right;">你</div>
+              <div class="bubble">1</div>
+            </div>
+            <div class="avatar">🙂</div>
+          </div>
+
+          <div class="message">
+            <div class="avatar">🖊️</div>
+            <div class="bubble-wrap">
+              <div class="label">OwnPen</div>
+              <div class="skill-card">
+                <div class="card-head">
+                  <div class="card-title"><span>✏️ 改写模式</span><span class="minor">先选场景，再粘文字</span></div>
+                </div>
+                <div class="card-body">
+                  <div class="prompt">选一个场景，我来改：</div>
+                  <table class="menu-table">
+                    <thead>
+                      <tr><th style="width:64px; text-align:center;">#</th><th>场景</th><th>改写方向</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td style="text-align:center;">1</td><td>通用</td><td>只去机器腔，保留原格式原语气</td></tr>
+                      <tr><td style="text-align:center;">2</td><td>公众号</td><td>有观点有节奏，去掉空话套话</td></tr>
+                      <tr><td style="text-align:center;">3</td><td>知乎</td><td>有立场有经历，去掉假深刻</td></tr>
+                      <tr><td style="text-align:center;">4</td><td>小红书</td><td>真实分享感，去掉表演感</td></tr>
+                      <tr><td style="text-align:center;">5</td><td>朋友圈</td><td>3-5句真实的，删掉所有铺垫</td></tr>
+                      <tr><td style="text-align:center;">6</td><td>工作汇报</td><td>结论先行，删掉修饰</td></tr>
+                      <tr><td style="text-align:center;">7</td><td>商务邮件</td><td>去官腔，保持正式有礼</td></tr>
+                      <tr><td style="text-align:center;">8</td><td>短视频脚本</td><td>口语节奏，有停顿感</td></tr>
+                      <tr><td style="text-align:center;">9</td><td>产品/活动文案</td><td>卖点具体，去假高级</td></tr>
+                      <tr><td style="text-align:center;">10</td><td>简历/自我介绍</td><td>去模板感，写出真实经历感</td></tr>
+                    </tbody>
+                  </table>
+                  <div class="prompt">💬 回复 1-10，我来改</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aside class="panel">
+        <h3>这个状态在验证什么</h3>
+        <p>这是 ownpen v1.3.1 之后最重要的交互修正：<strong>不再跳步</strong>，而是“选模式 → 选场景 → 粘文字”。</p>
+        <h4>为什么这页重要</h4>
+        <ul>
+          <li>10 个场景是产品差异化核心，必须在 UI 上被看见。</li>
+          <li>WorkBuddy 里表格比九宫格按钮更稳，也更适合桌面宽屏。</li>
+          <li>信息一屏收齐，避免用户来回问“支持哪些场景”。</li>
+        </ul>
+        <div class="mini-card">
+          <strong>我自己的判断：</strong>
+          <p>这页做得对，说明产品不是“单一改写器”，而是“带明确场景的写作风格工具”。如果后面要上线更多平台，这一屏很适合继续扩展。</p>
+        </div>
+      </aside>
+    </section>
+
+    <section id="paste" class="view">
+      <div class="shell">
+        <div class="shell-top">
+          <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div>WorkBuddy 对话预览 · 等待输入</div>
+          <div class="tiny">步骤 3 / 粘贴原文</div>
+        </div>
+        <div class="chat">
+          <div class="message user">
+            <div class="bubble-wrap">
+              <div class="label" style="text-align:right;">你</div>
+              <div class="bubble">6</div>
+            </div>
+            <div class="avatar">🙂</div>
+          </div>
+
+          <div class="message">
+            <div class="avatar">🖊️</div>
+            <div class="bubble-wrap">
+              <div class="label">OwnPen</div>
+              <div class="skill-card">
+                <div class="card-head">
+                  <div class="card-title"><span>📥 工作汇报场景</span><span class="minor">结论先行 · 删修饰 · 补行动项</span></div>
+                </div>
+                <div class="card-body">
+                  <div class="prompt">把要改的文字粘进来 👇</div>
+                  <div class="section-divider"></div>
+                  <div class="pill-row">
+                    <span class="pill">目标：30 秒抓重点</span>
+                    <span class="pill">语气：职业表达</span>
+                    <span class="pill">注意：保留原格式</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="message user">
+            <div class="bubble-wrap">
+              <div class="label" style="text-align:right;">你</div>
+              <div class="bubble">在当今数字化转型的大背景下，我们不仅需要积极拥抱 AI 技术，更要深度思考如何通过系统化手段提升组织效率。综上所述，未来可期。</div>
+            </div>
+            <div class="avatar">🙂</div>
+          </div>
+        </div>
+      </div>
+      <aside class="panel">
+        <h3>这个状态在验证什么</h3>
+        <p>这页很简单，但很关键：它决定用户会不会明白“现在该贴原文了”。</p>
+        <h4>在 WorkBuddy 里应保留的感觉</h4>
+        <ul>
+          <li>提示要短，不要讲一堆教程。</li>
+          <li>场景已经被确认后，要给用户一点心理锚点，比如“工作汇报场景”。</li>
+          <li>动作提示只保留一个，不要重复催促。</li>
+        </ul>
+        <div class="mini-card">
+          <strong>如果你后面真要继续打磨：</strong>
+          <p>这里可以加一个很小的“支持长文/多段粘贴”的次级说明，但别抢主操作。</p>
+        </div>
+      </aside>
+    </section>
+
+    <section id="rewrite" class="view">
+      <div class="shell">
+        <div class="shell-top">
+          <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div>WorkBuddy 对话预览 · 改写完成</div>
+          <div class="tiny">核心结果页</div>
+        </div>
+        <div class="chat">
+          <div class="message">
+            <div class="avatar">🖊️</div>
+            <div class="bubble-wrap">
+              <div class="label">OwnPen</div>
+              <div class="skill-card">
+                <div class="card-head">
+                  <div class="card-title"><span>✅ 改写完成 · 消除 5 处 AI 痕迹</span><span class="minor">工作汇报风格</span></div>
+                </div>
+                <div class="card-body">
+                  <div class="meta-grid">
+                    <div>致命 2 处 · 明显 2 处 · 轻微 1 处</div>
+                    <div>保留原立场</div>
+                    <div><strong>格式一字不动，只换掉机器味</strong></div>
+                    <div>已内部诊断</div>
+                  </div>
+
+                  <div class="copy-box">本周 AI 辅助改稿把交付时间从 4 小时压到 1.5 小时。
+
+目前最大的变化有两点：一是重复修改明显减少，二是同一份文案的风格更稳定。
+
+风险也要说清楚：如果直接套模板，成稿还是会有明显机器腔。下一步我会把常用场景拆成固定提示词，先在周报和邮件里试跑。</div>
+
+                  <div class="section-divider"></div>
+
+                  <div class="minor" style="margin-bottom: 8px; color: var(--text); font-weight: 800;">主要改了什么</div>
+                  <ul style="margin: 0; padding-left: 18px; line-height: 1.8; color: var(--muted); font-size: 14px;">
+                    <li>删掉了“在当今…大背景下”这类万能开头，直接把结果顶到第一句。</li>
+                    <li>把“积极拥抱 / 深度思考 / 系统化手段”换成可落地的动作和具体数字。</li>
+                    <li>补上风险和下一步，让工作汇报更像真实汇报而不是宣传稿。</li>
+                  </ul>
+
+                  <div class="action-row">
+                    <span class="chip">[换个场景再改]</span>
+                    <span class="chip">[重新粘入文字]</span>
+                    <span class="chip">[复制结果]</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aside class="panel">
+        <h3>这个状态在验证什么</h3>
+        <p>这是整个产品最值钱的一屏。用户会在这里判断：这东西到底是真有用，还是只是“换种说法”。</p>
+        <h4>这页必须让人一眼看到</h4>
+        <ul>
+          <li>改写完成了，而且不是黑箱，有数量感。</li>
+          <li>结果正文必须干净，不能被框线和标签污染。</li>
+          <li>下面的“主要改了什么”负责建立信任，而不是喧宾夺主。</li>
+        </ul>
+        <div class="mini-card">
+          <strong>我的判断：</strong>
+          <p>如果你要在 WorkBuddy 里打动人，这页已经够用了。它把“改完像人写的”这件事做成了可感知结果，不只是功能描述。</p>
+        </div>
+      </aside>
+    </section>
+
+    <section id="diagnosis" class="view">
+      <div class="shell">
+        <div class="shell-top">
+          <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div>WorkBuddy 对话预览 · 诊断模式</div>
+          <div class="tiny">问题分级 + 指数</div>
+        </div>
+        <div class="chat">
+          <div class="message user">
+            <div class="bubble-wrap">
+              <div class="label" style="text-align:right;">你</div>
+              <div class="bubble">2</div>
+            </div>
+            <div class="avatar">🙂</div>
+          </div>
+
+          <div class="message">
+            <div class="avatar">🖊️</div>
+            <div class="bubble-wrap">
+              <div class="label">OwnPen</div>
+              <div class="skill-card">
+                <div class="card-head">
+                  <div class="card-title"><span>🔍 诊断完成 · AI痕迹 5 处</span><span class="minor">致命 2 · 明显 2 · 轻微 1</span></div>
+                </div>
+                <div class="card-body">
+                  <table class="diag-table">
+                    <thead>
+                      <tr><th style="width:88px; text-align:center;">级别</th><th style="width:52px; text-align:center;">#</th><th style="width:140px;">位置</th><th>问题说明</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td style="text-align:center;"><span class="danger">🔴 致命</span></td><td style="text-align:center;">1</td><td>第 1 句</td><td>“在当今数字化转型的大背景下”是典型模板开头。</td></tr>
+                      <tr><td style="text-align:center;"><span class="danger">🔴 致命</span></td><td style="text-align:center;">2</td><td>第 1 句</td><td>“不仅…更要…”是强迫式排比，机器腔明显。</td></tr>
+                      <tr><td style="text-align:center;"><span class="warning">🟡 明显</span></td><td style="text-align:center;">1</td><td>第 1 句</td><td>“深度思考 / 系统化手段”抽象词过密，没有实际动作。</td></tr>
+                      <tr><td style="text-align:center;"><span class="warning">🟡 明显</span></td><td style="text-align:center;">2</td><td>结尾</td><td>“综上所述，未来可期”属于万能鸡汤收尾。</td></tr>
+                      <tr><td style="text-align:center;"><span class="success">⚪ 轻微</span></td><td style="text-align:center;">1</td><td>全文</td><td>只有抽象判断，没有数字、案例或个人经历支撑。</td></tr>
+                    </tbody>
+                  </table>
+
+                  <div class="gauge">
+                    <div>
+                      <div class="minor" style="margin-bottom: 8px;">🌡️ AI气味指数</div>
+                      <div class="meter">█████████░</div>
+                    </div>
+                    <div class="level">重</div>
+                  </div>
+
+                  <div class="prompt">核心问题：模板开头 + 排比句式 + 套话收尾同时出现，读起来很像标准 AI 宣传稿。</div>
+
+                  <div class="action-row">
+                    <span class="chip">[帮我改掉这些问题]</span>
+                    <span class="chip">[重新诊断]</span>
+                    <span class="chip">[切到工作汇报]</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aside class="panel">
+        <h3>这个状态在验证什么</h3>
+        <p>诊断模式不是陪衬，它是 OwnPen 建立专业感的那一部分。用户会在这里看到你不是“玄学改写”，而是真有规则体系。</p>
+        <h4>这页的亮点</h4>
+        <ul>
+          <li>问题表格能快速定位具体句子。</li>
+          <li>AI气味指数让结果有强弱层次，不只是“有问题 / 没问题”。</li>
+          <li>下方动作直接承接到改写，链路自然。</li>
+        </ul>
+        <div class="mini-card">
+          <strong>如果你要继续升级：</strong>
+          <p>后面可以补一个“只看致命问题”的收起/展开交互，但首版没必要，先保证信息可信、顺手就行。</p>
+        </div>
+      </aside>
+    </section>
+
+    <section id="full" class="view">
+      <div class="shell">
+        <div class="shell-top">
+          <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div>WorkBuddy 对话预览 · 全流程串看</div>
+          <div class="tiny">从启动到结果</div>
+        </div>
+        <div class="chat">
+          <div class="full-flow">
+            <div class="message">
+              <div class="avatar">🖊️</div>
+              <div class="bubble-wrap">
+                <div class="label">OwnPen</div>
+                <div class="bubble">🖊️ OwnPen · AI去痕迹改写
+45条检测规则 · 10种场景风格
+
+1. [改写]   2. [诊断]
+
+💬 回复 1 或 2，或直接粘入文字</div>
+              </div>
+            </div>
+
+            <div class="message user">
+              <div class="bubble-wrap">
+                <div class="label" style="text-align:right;">你</div>
+                <div class="bubble">1</div>
+              </div>
+              <div class="avatar">🙂</div>
+            </div>
+
+            <div class="message">
+              <div class="avatar">🖊️</div>
+              <div class="bubble-wrap">
+                <div class="label">OwnPen</div>
+                <div class="bubble">选一个场景，我来改：
+
+1 通用 · 2 公众号 · 3 知乎 · 4 小红书 · 5 朋友圈
+6 工作汇报 · 7 商务邮件 · 8 短视频脚本 · 9 产品/活动文案 · 10 简历/自我介绍
+
+💬 回复 1-10</div>
+              </div>
+            </div>
+
+            <div class="message user">
+              <div class="bubble-wrap">
+                <div class="label" style="text-align:right;">你</div>
+                <div class="bubble">6</div>
+              </div>
+              <div class="avatar">🙂</div>
+            </div>
+
+            <div class="message">
+              <div class="avatar">🖊️</div>
+              <div class="bubble-wrap">
+                <div class="label">OwnPen</div>
+                <div class="bubble">把要改的文字粘进来 👇</div>
+              </div>
+            </div>
+
+            <div class="message user">
+              <div class="bubble-wrap">
+                <div class="label" style="text-align:right;">你</div>
+                <div class="bubble">在当今数字化转型的大背景下，我们不仅需要积极拥抱 AI 技术，更要深度思考如何通过系统化手段提升组织效率。综上所述，未来可期。</div>
+              </div>
+              <div class="avatar">🙂</div>
+            </div>
+
+            <div class="message">
+              <div class="avatar">🖊️</div>
+              <div class="bubble-wrap">
+                <div class="label">OwnPen</div>
+                <div class="bubble">✅ 改写完成 · 消除 5 处 AI 痕迹
+
+本周 AI 辅助改稿把交付时间从 4 小时压到 1.5 小时。
+目前最大的变化有两点：一是重复修改明显减少，二是同一份文案的风格更稳定。
+风险也要说清楚：如果直接套模板，成稿还是会有明显机器腔。下一步我会把常用场景拆成固定提示词，先在周报和邮件里试跑。
+
+[换个场景再改]   [重新粘入文字]</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aside class="panel">
+        <h3>串起来看，整体像不像你想要的</h3>
+        <p>如果你重点是验证“在 WorkBuddy 里是不是比 Claude Code 预览更有产品感”，那就看这页：它把完整链路压到一个桌面聊天界面里了。</p>
+        <h4>我看到的结论</h4>
+        <ul>
+          <li>OwnPen 这种工具型 Skill 很适合 WorkBuddy，因为流程短、结果强、卡片化清楚。</li>
+          <li>你这套 Markdown 表格规范转成 WorkBuddy 风格后，观感比纯文本强很多。</li>
+          <li>最能打的是结果页，不是欢迎页。欢迎页够清楚就行，重点把“改完什么样”做漂亮。</li>
+        </ul>
+        <div class="mini-card">
+          <strong>建议你下一步看的点：</strong>
+          <p>别只盯欢迎页，多看“改写结果页”和“诊断结果页”是否足够像一个成熟产品，因为用户最后记住的是这里。</p>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+    const views = document.querySelectorAll('.view');
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.view;
+        tabs.forEach((item) => item.classList.remove('active'));
+        views.forEach((view) => view.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(target).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
