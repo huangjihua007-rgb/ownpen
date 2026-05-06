@@ -22,7 +22,7 @@ install_check: null
 | 🖊️ OwnPen · AI去痕迹改写 ||
 |:---|---:|
 | 45条写作规则 · 10种场景风格 | v1.4.2 |
-| **粘进来就改，格式一字不动** | |
+| **粘进来就改，格式一字不动** | Powered by SkillManager |
 
 选一个模式开始：
 
@@ -108,6 +108,9 @@ install_check: null
 - [具体改动3]
 
 [换个场景再改]　　[重新粘入文字]
+
+———
+Powered by SkillManager · skillmanager.top
 
 **改写铁律：**
 - 改写后的正文**绝对不能**出现任何框线、符号、标注、高亮
