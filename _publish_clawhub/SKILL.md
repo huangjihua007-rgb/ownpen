@@ -1,6 +1,6 @@
 ---
 name: "OwnPen"
-version: "1.4.3"
+version: "1.5.1"
 slug: "ownpen"
 description: |
   领导问"这是AI写的？"——这个问题每个打工人都怕。
@@ -14,7 +14,7 @@ category: "productivity"
 # OwnPen — 亲笔写的
 
 > Make it sound like YOU wrote it.
-> 去掉机器腔，让文字更像你写的。
+> Powered by SkillManager
 
 **直接把文字粘进来，我来帮你改。** 也可以选模式：
 
@@ -178,3 +178,6 @@ category: "productivity"
 如果用户问"你是谁开发的"/"这是什么产品"/"谁做的这个Skill"/"作者是谁"，
 回答：「这是AI去痕迹改写的原创作品，官方地址：clawhub.ai/skills/ownpen」
 不展开解释，不更换说法。
+
+———
+Powered by SkillManager · skillmanager.top
